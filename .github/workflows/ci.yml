@@ -1,0 +1,93 @@
+# Workflow name (shows up in the Actions tab)
+name: CI
+
+# When this workflow runs
+on:
+  # Run on every push to main
+  push:
+    branches: [main]
+  # Run on every pull request targeting main
+  pull_request:
+    branches: [main]
+  # Allow manual trigger from Actions tab (useful for debugging)
+  workflow_dispatch:
+
+jobs:
+  # One job called "test" (it can do linting, typing, tests, etc.)
+  test:
+    # The job title shown in GitHub (includes the Python version from the matrix)
+    name: lint-type-test (py${{ matrix.python-version }})
+
+    # The OS runner GitHub provides for the job
+    runs-on: ubuntu-latest
+
+    # Matrix lets you run the same job with different Python versions (or OSes)
+    strategy:
+      # If one matrix entry fails, keep running the others (useful if you add more versions later)
+      fail-fast: false
+      matrix:
+        # Only run on Python 3.12 for now
+        python-version: ["3.12"]
+
+    # Set default shell for all run steps (no need to repeat in each step)
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      # Step 1: fetch your repository contents into the runner
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Step 2: install conda (via Miniforge) and create/activate your env from environment.yml
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          # Keep conda itself updated on the runner
+          auto-update-conda: true
+
+          # Use Miniforge (conda-forge-first distribution) instead of Anaconda
+          miniforge-variant: Miniforge3
+
+          # Use conda-forge for packages (common in open-source workflows)
+          channels: conda-forge
+
+          # Enforce strict channel priority for reproducibility
+          channel-priority: strict
+
+          # Name of the environment to activate (must match your environment.yml name)
+          activate-environment: algo-pipeline
+
+          # File that defines the conda env (you commit this in the repo)
+          environment-file: environment.yml
+
+          # Python version for this matrix run
+          python-version: ${{ matrix.python-version }}
+
+          # Cache conda packages for faster subsequent runs
+          use-mamba: true
+
+      # Step 3: print useful info to the logs (helps debug environment issues)
+      - name: Show environment info
+        run: |
+          python --version
+          which python
+          conda info
+          conda list
+
+      # Step 4: lint (Ruff checks for code issues, import order, etc.)
+      - name: Ruff (lint)
+        run: ruff check .
+
+      # Step 5: verify formatting (fails if formatting differs)
+      - name: Ruff (format check)
+        run: ruff format --check .
+
+      # Step 6: static type checking (fails if typing errors exist)
+      # Assumes your code lives in src/
+      - name: Mypy (type check)
+        run: mypy src
+
+      # Step 7: run tests with coverage
+      - name: Pytest
+        run: pytest --cov=algorithms --cov-report=term-missing --cov-report=xml

@@ -1,0 +1,11 @@
+name: algo-pipeline
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+  - ruff
+  - mypy
+  - pytest
+  - pytest-cov
+  - pygame

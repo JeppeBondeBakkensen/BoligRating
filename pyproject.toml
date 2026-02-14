@@ -1,0 +1,167 @@
+# ---------------------------------------
+# Build system configuration (PEP 517/518)
+# ---------------------------------------
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+# ---------------------------------------
+# Project metadata (PEP 621)
+# ---------------------------------------
+[project]
+name = "algorithms"
+version = "0.1.0"
+description = "Algorithm implementations and experiments."
+readme = "README.md"
+requires-python = ">=3.12"
+
+# Add dependencies as you need them
+dependencies = []
+
+[project.optional-dependencies]
+# Development dependencies
+dev = ["pytest>=8.2.0", "pytest-cov>=4.1.0", "mypy>=1.16.0", "ruff>=0.8.0"]
+
+
+# ---------------------------------------
+# setuptools configuration
+# ---------------------------------------
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+
+# ---------------------------------------
+# Ruff configuration (linting & formatting)
+# ---------------------------------------
+[tool.ruff]
+# Shared settings for both `ruff check` and `ruff format`.
+# The formatter wraps lines based on `line-length`.
+line-length = 100
+# Keep in sync with `requires-python`; influences fixes and formatting.
+target-version = "py312"
+
+# Formatter settings (run with `ruff format`).
+# Ruff uses sensible defaults; add overrides here if needed.
+[tool.ruff.format]
+
+[tool.ruff.lint]
+# Linting rules (run with `ruff check`).
+# `preview = true` allows preview rules to be selected explicitly.
+preview = true
+select = [
+    # Pycodestyle / Pyflakes
+    "E",
+    "W",
+    "F",
+
+    # Modernization & correctness
+    "UP",
+    "YTT",
+    "INP",
+
+    # Imports
+    "I",
+    "TID253",
+
+    # Logging, strings, testing, numpy
+    "G",
+    "ISC",
+    "PT025",
+    "NPY",
+
+    # Pylint-derived rules
+    "PLE",
+    "PLR",
+    "PLC",
+    "PLW",
+
+    # Docstring style (Google convention subset)
+    "D214",
+    "D300",
+    "D402",
+    "D403",
+    "D405",
+    "D410",
+    "D411",
+    "D412",
+    "D413",
+    "D414",
+    "D416",
+    "D417",
+    "D418",
+    "D419",
+
+    # Typing / typing-only imports
+    "TC",
+    "PYI",
+
+    # Ruff-specific rules
+    "RUF",
+
+    # Explicit preview rules (opt-in while in preview)
+    "RUF027",
+    "PYI059",
+]
+
+ignore = [
+    # Conflicts with formatter or preferred style
+    "E501",   # line length handled by formatter
+    "W191",   # tabs handled by formatter
+    "E111",
+    "E114",
+    "E117",
+    "D206",
+    "D300",
+    "Q000",
+    "Q001",
+    "Q002",
+    "Q003",
+    "COM812",
+    "COM819",
+    "ISC002",
+    "D413",
+    # Project-specific relaxations
+    "PLC1901",
+    "PLR0913",
+    "PLR0917",
+    "INP001",
+    "PLR2004",
+    "PLR6104",
+]
+
+[tool.ruff.lint.isort]
+# Import sorting configuration
+known-first-party = ["algorithms"]
+
+[tool.ruff.lint.pydocstyle]
+# Docstring convention for D* rules
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+# Relax lint rules in tests
+"tests/*" = ["PLC2701", "PLR0914"]
+
+# ---------------------------------------
+# mypy configuration (static typing)
+# ---------------------------------------
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+check_untyped_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true
+no_implicit_optional = true
+
+
+# ---------------------------------------
+# pytest configuration
+# ---------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra --tb=short --strict-markers"
