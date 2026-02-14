@@ -56,7 +56,7 @@ jobs:
           channel-priority: strict
 
           # Name of the environment to activate (must match your environment.yml name)
-          activate-environment: algo-pipeline
+          activate-environment: boligratings
 
           # File that defines the conda env (you commit this in the repo)
           environment-file: environment.yml
@@ -90,4 +90,4 @@ jobs:
 
       # Step 7: run tests with coverage
       - name: Pytest
-        run: pytest --cov=algorithms --cov-report=term-missing --cov-report=xml
+        run: pytest --cov=boligratings --cov-report=term-missing --cov-report=xml

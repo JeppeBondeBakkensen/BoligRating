@@ -1,18 +1,18 @@
-# Algorithms
+# BoligRatings
 
-Small, focused implementations of algorithms and data structures.
+Data collection and scoring for housing listings.
 
 ## Quick start
 
 ```bash
 conda env create -f environment.yml
-conda activate algo-pipeline
+conda activate boligratings
 pytest -q
 ```
 
 ## Project layout
 
 ```text
-src/algorithms/    # library code
+src/boligratings/  # library code
 tests/             # tests
 ```
